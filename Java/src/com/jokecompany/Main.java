@@ -1,66 +1,49 @@
 package com.jokecompany;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.util.Hashtable;
 
 public class Main {
 
-    static String[] results = new String[50];
-    static char key;
-    static Hashtable<String, String> names = new Hashtable<>();
-    static ConsolePrinter printer = new ConsolePrinter();
+    static String jokeURL = "https://us-central1-geotab-interviews.cloudfunctions.net/joke";
+    static String jokeCategoryURL = "https://us-central1-geotab-interviews.cloudfunctions.net/joke_category";
 
-    public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
-        BufferedReader c = new BufferedReader(new InputStreamReader(System.in));
-        printer.Value("Press ? to get instructions.").toString();
-        key = c.readLine().charAt(0);
-        while (true) {
-            printer.Value("Press c to get categories").toString();
-            printer.Value("Press r to get random jokes").toString();
-            key = c.readLine().charAt(0);
-            if (key == 'c')
-            {
-                getCategories();
-                PrintResults();
+    public static void main(String[] args) throws Exception {
+        
+       Prompter.ask("Press ? to get instructions: ", new String[] { "?" });
+
+        while(true) {                
+            
+            String answer = Prompter.ask("\nPress c to get categories.\nPress r to get random jokes: ", new String[] { "c", "r" });
+            
+            if(answer.equals("c")) {
+                
+                Prompter.formatResults(Feed.getCategories(Main.jokeCategoryURL));
             }
-            if (key == 'r')
-            {
-                printer.Value("Want to specify a category? y/n").toString();
-                if (key == 'y')
-                {
-                    printer.Value("How many jokes do you want? (1-9)").toString();
-                    int n = Integer.parseInt(c.readLine());
-                    printer.Value("Enter a category;").toString();
-                    getRandomJokes(c.readLine(), n);
-                    PrintResults();
+            
+            if(answer.equals("r")) {
+                
+                String category = Prompter.ask("\nWant to specify a category? y/n: ", new String[] { "y", "n" });
+                
+                if(category.equals("y")) {
+                    
+                    System.out.println("\nHere are the categories: ");
+
+                    String[] categories = Feed.getCategories(Main.jokeCategoryURL);
+                    
+                    Prompter.formatResults(categories);
+                    
+                    String categoryName = Prompter.ask("\nEnter a category: ", categories);                        
+                    
+                    int number = Integer.parseInt(Prompter.ask("\nHow many jokes do you want? (1-9): ", new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
+                    
+                    Prompter.formatResults(Feed.getRandomJokes(Main.jokeURL, number, categoryName));
                 }
-                else
-                {
-                    printer.Value("How many jokes do you want? (1-9)").toString();
-                    int n = Integer.parseInt(c.readLine());
-                    getRandomJokes(null, n);
-                    PrintResults();
+                else {
+                    
+                    int number = Integer.parseInt(Prompter.ask("\nHow many jokes do you want? (1-9): ", new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
+                    
+                    Prompter.formatResults(Feed.getRandomJokes(Main.jokeURL, number, null));
                 }
             }
-            names.clear();
         }
-    }
-
-    private static void PrintResults()
-    {
-        printer.Value("[" + String.join(",", results) + "]").toString();
-    }
-
-    private static void getRandomJokes(String category, int number) throws InterruptedException, IOException, URISyntaxException {
-        new JsonFeed("https://us-central1-geotab-interviews.cloudfunctions.net/joke", number);
-        results = JsonFeed.getRandomJokes(category);
-    }
-
-    private static void getCategories() throws InterruptedException, IOException, URISyntaxException {
-        new JsonFeed("https://us-central1-geotab-interviews.cloudfunctions.net/joke_category", 0);
-        results = JsonFeed.getCategories();
     }
 }
