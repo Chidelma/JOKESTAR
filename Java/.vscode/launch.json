@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Launch Main",
+            "mainClass": "com.jokecompany.Main",
+            "type": "java",
+            "request": "launch"
+        },
+        {
+            "name": "Launch Tests",
+            "mainClass": "com.tests.TestRunner",
+            "type": "java",
+            "request": "launch",
+            "vmArgs": "--add-opens=java.base/java.time=ALL-UNNAMED"
+        }
+    ]
+}

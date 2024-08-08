@@ -5,7 +5,18 @@ import java.util.*;
 
 public class Prompter {
 
-    public static String ask(String prompt, String[] allowedAnswers) throws Exception {
+    // Constructor
+    public Prompter() {}
+
+    /**
+     * Asks the user for input and returns the answer.
+     * 
+     * @param prompt The prompt to display to the user.
+     * @param allowedAnswers The allowed answers.
+     * @return The answer.
+     * @throws Exception
+     */
+    public String ask(String prompt, String[] allowedAnswers) throws Exception {
 
         String answer = "";
 
@@ -19,6 +30,9 @@ public class Prompter {
 
             line = reader.readLine();
 
+            System.out.println(line);
+
+            // If the answer is in the allowed answers, set the answer and break the loop
             if (Arrays.stream(allowedAnswers).anyMatch(line::equals)) {
                 answer = line.toLowerCase();
                 break;
@@ -31,8 +45,14 @@ public class Prompter {
         return answer;
     }
 
+    /**
+     * Formats the results.
+     * 
+     * @param results The results to format.
+     */
     public static void formatResults(String[] results) {
 
+        // Print each result with a number
         for (int i = 0; i < results.length; i++) {
             System.out.println(i + 1 + ". " + results[i]);
         }

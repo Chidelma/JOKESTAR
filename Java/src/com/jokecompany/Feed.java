@@ -9,7 +9,24 @@ import java.util.*;
 
 public class Feed {
 
-    private static String invokeURL(String url, HashMap<String, String> params) throws URISyntaxException, IOException, InterruptedException {
+    // URLs for the Joke API
+    private static String jokeURL = "https://us-central1-geotab-interviews.cloudfunctions.net/joke";
+    private static String jokeCategoryURL = "https://us-central1-geotab-interviews.cloudfunctions.net/joke_category";
+
+    // Constructor
+    public Feed() {}
+
+    /**
+     * Invokes the URL and returns the response as a string.
+     * 
+     * @param url The URL to invoke.
+     * @param params The parameters to pass to the URL.
+     * @return The response as a string.
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private String invokeURL(String url, HashMap<String, String> params) throws URISyntaxException, IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -28,7 +45,18 @@ public class Feed {
         return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
     }
 
-    public static String[] getRandomJokes(String url, int total, String category) throws URISyntaxException, IOException, InterruptedException {
+    /**
+     * Gets a random joke from the Joke API.
+     * 
+     * @param url The URL to invoke.
+     * @param total The number of jokes to get.
+     * @param category The category of jokes to get.
+     * @return An array of jokes.
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public String[] getRandomJokes(int total, String category) throws URISyntaxException, IOException, InterruptedException {
 
         String[] jokes = new String[total];
 
@@ -41,14 +69,15 @@ public class Feed {
             if(category != null) {
                 HashMap<String, String> params = new HashMap<>();
                 params.put("category", category);
-                data = invokeURL(url, params);
+                data = invokeURL(Feed.jokeURL, params);
             } else {
-                data = invokeURL(url, null);
+                data = invokeURL(Feed.jokeURL, null);
             }
 
             var jsonObject = new JsonParser().parse(data).getAsJsonObject();
             String joke = jsonObject.get("value").getAsString();
 
+            // If the joke is not already in the array, add it
             if(!Arrays.stream(jokes).anyMatch(joke::equals)) {
                 jokes[i] = joke;
                 i++;
@@ -59,9 +88,18 @@ public class Feed {
         return jokes;
     }
 
-    public static String[] getCategories(String url) throws URISyntaxException, IOException, InterruptedException {
+    /**
+     * Gets a list of categories from the Joke API.
+     * 
+     * @param url The URL to invoke.
+     * @return An array of categories.
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public String[] getCategories() throws URISyntaxException, IOException, InterruptedException {
 
-        var carArray = new JsonParser().parse(invokeURL(url, null)).getAsJsonArray();
+        var carArray = new JsonParser().parse(invokeURL(Feed.jokeCategoryURL, null)).getAsJsonArray();
 
         String[] categories = new String[carArray.size()];
 
