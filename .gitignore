@@ -233,3 +233,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+AGENTS.md
+CLAUDE.md
+.github/copilot-instructions.md
